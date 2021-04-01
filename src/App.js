@@ -5,18 +5,18 @@ import './App.css';
 const App = () => {
   const randomCoord = (min, max) =>  min - 0.5 + Math.random() * (max - min + 1);
 
-  const generatePoints = (step, xMin, xMax, yMin, yMax) => {
+  const generateShape = (step, xMin, xMax, yMin, yMax) => {
     const count = Math.round((xMax - xMin) / step);
     let x = xMin;
 
-    const path = new THREE.Path();
-    path.moveTo( x, randomCoord(yMin, yMax));
-    [...Array(count - 1).keys()].forEach(() => {
-      const y = randomCoord(yMin, yMax);
-      path.lineTo( x += step, y);
+    const shape = new THREE.Shape().moveTo( x, yMin);
+    [...Array(count).keys()].forEach(() => {
+      const y = THREE.Math.randFloat(yMin, yMax);
+      shape.lineTo( x += step, y);
     });
+    shape.lineTo( xMax, yMin);
 
-    return path.getPoints();
+    return shape;
   }
 
   useEffect(() => {
@@ -37,38 +37,34 @@ const App = () => {
     const planeGeom = new THREE.PlaneGeometry(200, 1, 200, 1);
     planeGeom.translate(0, 0, 0);
 
-    const plane = new THREE.Mesh(planeGeom, new THREE.MeshBasicMaterial({
-      color: "red",
-      wireframe: false,
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: .75
-    }));
-    scene.add(plane);
-
     // axises
-    const lineMaterial = new THREE.LineBasicMaterial( { color: "red" } );
-    const points = [
-      new THREE.Vector3( - 10, 0, 0 ),
-      new THREE.Vector3( 10, 0, 0 ),
-      new THREE.Vector3( 0, 10, 0 ),
-      new THREE.Vector3( 0, -10, 0 ),
-    ];
-    const lineGeometry = new THREE.BufferGeometry().setFromPoints( points );
-    const axis = new THREE.Line( lineGeometry, lineMaterial );
+    // const lineMaterial = new THREE.LineBasicMaterial( { color: "red" } );
+    // const points = [
+    //   new THREE.Vector3( -5, 0, 0 ),
+    //   new THREE.Vector3( 5, 0, 0 ),
+    //   new THREE.Vector3( 0, 2, 0 ),
+    //   new THREE.Vector3( 0, -2, 0 ),
+    // ];
+    // const lineGeometry = new THREE.BufferGeometry().setFromPoints( points );
+    // const axis = new THREE.Line( lineGeometry, lineMaterial );
+    // axis.autoClose = false;
     // scene.add(axis);
 
     // char
-    const lines = generatePoints( 0.05, -5, 5, -0.5, 3);
-    const geometryPoints = new THREE.BufferGeometry().setFromPoints( lines );
-    const materialPoints = new THREE.LineBasicMaterial( { color: 'aqua' } );
-    const line = new THREE.Line( geometryPoints, materialPoints );
-    const geometry = new THREE.BufferGeometry();
+    const group = new THREE.Group();
+    const shape = generateShape( 0.05, -5, 5, -0.5, 3);
+    shape.autoClose = false;
+    let geometry = new THREE.ShapeGeometry( shape );
+    const mesh = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { color: 0xf00000} ) );
 
-    console.log(planeGeom)
-    // geometry.vertices.push(planeGeom.vertic);
+    group.add( mesh );
 
-    scene.add( line );
+    const pointss = shape.getPoints();
+    const geometryPoints = new THREE.BufferGeometry().setFromPoints( pointss );
+    let line = new THREE.Line( geometryPoints, new THREE.LineBasicMaterial( { color: 'aqua'} ) );
+    group.add( line );
+
+    scene.add(group)
 
     renderer.render(scene, camera);
 
