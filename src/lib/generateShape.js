@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-export const generateShape = (step, xMin, xMax, yMin, yMax) => {
+export const generateShape = (scene, step, xMin, xMax, yMin, yMax, ) => {
     const count = Math.round((xMax - xMin) / step);
     let x = xMin;
 
@@ -8,6 +8,12 @@ export const generateShape = (step, xMin, xMax, yMin, yMax) => {
     [...Array(count).keys()].forEach(() => {
         const y = THREE.Math.randFloat(yMin, yMax);
         shape.lineTo( x += step, y);
+        const geometry = new THREE.CircleGeometry(0.04, 24);
+
+        const material = new THREE.MeshBasicMaterial( { color: 'aqua' } );
+        const circle = new THREE.Mesh( geometry, material );
+        circle.position.set(x, y);
+        scene.add( circle );
     });
     shape.lineTo( xMax, yMin);
 

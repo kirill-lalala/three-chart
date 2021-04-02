@@ -10766,7 +10766,12 @@
   "resolved" "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz"
   "version" "0.2.0"
 
-"three@^0.127.0":
+"three.interaction@^0.2.3":
+  "integrity" "sha512-gipj4E9WSASSys3SC5uU8HPmHodTDYmggJqKN5yjl6S2vG966EkGLu67jkXQoyB/yvGx38C72vHwdjICAh+avg=="
+  "resolved" "https://registry.npmjs.org/three.interaction/-/three.interaction-0.2.3.tgz"
+  "version" "0.2.3"
+
+"three@^0.127.0", "three@^0.89.0":
   "integrity" "sha512-wtgrn+mhYUbobxT7QN3GPdu3SRpSBQvwY6uOzLChWS7QE//f7paDU/+wlzbg+ngeIvBBqjBHSRuywTh8A99Jng=="
   "resolved" "https://registry.npmjs.org/three/-/three-0.127.0.tgz"
   "version" "0.127.0"
