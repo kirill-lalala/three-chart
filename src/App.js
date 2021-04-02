@@ -1,16 +1,23 @@
-import {useEffect} from 'react';
+import { useEffect, useRef } from 'react';
+import { chartService as chartData } from "./services/ChartService";
+
 import './App.css';
-import {ChartService} from "./services/ChartService";
 
 const App = () => {
-  useEffect(() => {
-    const canvas = document.getElementById('c');
-    const chartService = new ChartService(canvas);
-    chartService.createChart();
-  }, [])
+    const canvasRef = useRef(null);
 
-  return (
-      <canvas id="c" />
+    useEffect(() => {
+        chartData.createChart(canvasRef.current);
+    }, [])
+
+    return (
+        <>
+            <div className="buttonsWrap">
+                <button onClick={() => chartData.onPlusZoomClick()} className="button"> + </button>
+                <button onClick={() => chartData.onMinusZoomClick()} className="button"> - </button>
+            </div>
+            <canvas ref={canvasRef}/>
+        </>
   );
 }
 

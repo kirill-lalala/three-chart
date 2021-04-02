@@ -1,0 +1,21 @@
+.buttonsWrap {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.button {
+    display: block;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.button:hover {
+    background: beige;
+}
+
+.button:focus {
+    outline: none;
+}
