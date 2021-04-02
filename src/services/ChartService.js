@@ -1,9 +1,13 @@
 import * as THREE from "three";
 import { Interaction } from 'three.interaction';
 import { generateShape } from "../lib/generateShape";
+import {generatePoints} from "../lib/generatePoints";
+import {addCircles} from "../lib/addCircles";
 
 export class ChartService {
     INTERSECTED;
+    LINE_COLOR = 0x00FFFF;
+    CHART_COLOR = 0xFF0000;
 
     constructor(canvas) {
         this.canvas = canvas;
@@ -15,13 +19,7 @@ export class ChartService {
 
     _createCamera() {
         const aspectRatio = window.innerWidth / window.innerHeight;
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-        // this.camera = new THREE.PerspectiveCamera( 40, aspectRatio, 1, 1000 );
-        // this.camera.position.set(0, 2, 10);
-       this.camera = new THREE.OrthographicCamera( -5, 5, 7, -3, 0.01, 1000 );
-       this.camera.zoom = 0.2;
-       this.camera.updateProjectionMatrix();
+       this.camera = new THREE.OrthographicCamera( -3 * aspectRatio, 3 * aspectRatio, 5, -1, 1, 1000 );
        this.scene.add(this.camera );
 
     }
@@ -31,10 +29,6 @@ export class ChartService {
         this.canvas.height = window.innerHeight;
         this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-
-    _addGridHelper() {
-        this.scene.add(new THREE.GridHelper( 20, 20 ));
     }
 
     _onWindowResize() {
@@ -56,26 +50,40 @@ export class ChartService {
         this._createScene();
         this._createCamera();
         this._createRenderer();
-        // this._addGridHelper();
+        this.scene.add(this.camera );
+        new Interaction(this.renderer, this.scene, this.camera);
 
-        // const interaction = new Interaction(this.renderer, this.scene, this.camera);
+        const points = generatePoints(0.05, -5, 5, -0.5, 3);
+        const shape = generateShape(points);
+        const circles = addCircles(points, this.scene);
 
-        const shape = generateShape(this.scene, 0.05, -5, 5, -0.5, 3);
         const geometry = new THREE.ShapeGeometry( shape );
         const mesh = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { color: 'red'} ) );
-
+        mesh.position.z = -10;
         this.scene.add( mesh );
 
-        // mesh.on('mousemove', function(ev) { console.log(ev) });
-
-        const points = shape.getPoints();
         const geometryPoints = new THREE.BufferGeometry().setFromPoints( points );
         const line = new THREE.Line( geometryPoints, new THREE.LineBasicMaterial( { color: 'aqua'} ) );
+        line.position.z = -10;
         this.scene.add( line );
-        // line.on('mousemove', function(ev) { console.log('line') });
+
+        mesh.on('mouseout', () => {
+            circles.forEach((p) => {
+                p.material.color.setHex(this.LINE_COLOR);
+            })
+            mesh.material.color.setHex(this.CHART_COLOR);
+            line.material.color.setHex(this.LINE_COLOR);
+        });
+
+        mesh.on('mousemove', () => {
+            circles.forEach((p) => {
+                p.material.color.setHex(this.CHART_COLOR);
+            })
+            mesh.material.color.setHex(this.LINE_COLOR);
+            line.material.color.setHex(this.CHART_COLOR);
+        });
 
         this.renderer.render(this.scene, this.camera);
-
         window.requestAnimationFrame(this.render);
     }
 }
